@@ -12,6 +12,12 @@ Python 3.9+，macOS/Linux，Git 和已安装的 Codex CLI。主账号负责检�
 
 控制台只监听 `127.0.0.1`，账号凭据和项目不会上传到一个额外的网站。关闭启动它的终端窗口即可停止控制台。由于它需要调用本机 Git、Codex 和项目文件，因此不提供公网部署版本。
 
+## 多设备使用
+
+GitHub 用于同步程序代码和文档，不会把仓库绑定到某一台电脑。另一台 Mac 可以使用自己的 GitHub SSH Key 或 `gh auth login` 克隆同一个仓库，然后在本机运行 `install-skill.command` 和 `start.command`。
+
+账号登录、API Key、执行池配置、运行日志与项目统计默认不上传 GitHub。每台 Mac 需要分别登录 Codex/Kimi、配置外部模型 Key 并保存协作配置；这是为了避免凭据和本地项目记录进入仓库。iPad 和 iPhone 可以通过 GitHub App、网页或 Codespaces 查看代码、Issue 和提交，但不能直接运行依赖本地 Git 与各模型 CLI 的调度器。若需要从移动设备发起任务，可以后续增加 GitHub Issue 任务队列，由一台保持在线的 Mac 领取执行。
+
 不要直接打开 `web/index.html`。直接打开时地址以 `file://` 开头，本地服务没有启动，页面无法读取账号和项目；新版页面会显示启动提示。正确打开后的地址是 `http://127.0.0.1:8765/`。
 
 控制台会自动读取当前 Codex CLI 登录并显示为“当前 Codex”，也会读取 Codex App 保存的本地项目。多账号协作依赖 Git worktree；已有 Git 项目可以直接启动，非 Git 项目需要先在界面中完成一次本地初始化。
