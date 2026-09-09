@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="team-token" content="__API_TOKEN__">
+  <title>Codex Team 控制台</title>
+  <meta name="description" content="在本机配置 Codex、Kimi、通义、DeepSeek、智谱多 Agent 协作池">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3 4.2 7.5v9L12 21l7.8-4.5v-9L12 3Z"/><path d="m8 10 4-2.3 4 2.3v4.5l-4 2.3-4-2.3V10Z"/></svg>
+      </span>
+      <div>
+        <strong>Codex Team</strong>
+        <span>本地协作控制台</span>
+      </div>
+    </div>
+    <div class="local-badge"><i></i> 仅在本机运行</div>
+  </header>
+
+  <main>
+    <section class="workspace">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">协作配置</p>
+          <h1>设置主账号与执行池</h1>
+        </div>
+        <span class="decision">项目和目标由当前对话提供</span>
+      </div>
+
+      <form id="run-form">
+        <div class="account-grid">
+          <label class="field">
+            <span>主账号</span>
+            <select id="master" required><option value="">选择主账号</option></select>
+            <small>负责分析、分工和最终验收</small>
+          </label>
+          <label class="field">
+            <span>最大并行任务</span>
+            <input id="parallel" type="number" min="1" value="2" required>
+            <small>实际数量不会超过执行 Agent 数</small>
+          </label>
+          <label class="field">
+            <span>模型路由策略</span>
+            <select id="routing-policy">
+              <option value="cost">成本优先</option>
+              <option value="balanced" selected>均衡</option>
+              <option value="quality">质量优先</option>
+            </select>
+            <small>主账号选择能胜任任务的合适 Agent</small>
+          </label>
+        </div>
+
+        <fieldset class="workers">
+          <legend>执行 Agent 池</legend>
+          <div id="worker-list" class="worker-list">
+            <div class="empty-inline">添加 Agent 后在这里选择</div>
+          </div>
+        </fieldset>
+
+        <div class="conversation-hint">
+          <strong>从项目对话发起任务</strong>
+          <span>在目标项目中告诉主账号你的要求；主账号会先判断是否值得拆分，再按路由策略选择 Agent。</span>
+          <code>$codex-team 完成你的项目目标</code>
+        </div>
+
+        <div class="submit-row">
+          <p id="form-message" role="status"></p>
+          <button class="primary" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+            保存协作配置
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <aside>
+      <section class="panel accounts-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Agent 池</p>
+            <h2>执行 Agent</h2>
+          </div>
+          <span id="account-count" class="count">0</span>
+        </div>
+        <div id="accounts" class="account-list"></div>
+        <p id="agent-note" class="account-note">主账号使用 Codex；执行 Agent 可混用多家 Coding 模型。</p>
+        <form id="login-form" class="add-account">
+          <select id="agent-provider" aria-label="Agent 类型">
+            <option value="codex">Codex</option>
+            <option value="kimi">Kimi 账号登录</option>
+            <option value="kimi-api">Kimi 开放平台 API</option>
+            <option value="qwen">阿里通义</option>
+            <option value="deepseek">DeepSeek</option>
+            <option value="zhipu">智谱 GLM</option>
+          </select>
+          <input id="account-name" placeholder="账号名称或邮箱" maxlength="120" required>
+          <input id="agent-model" placeholder="模型名称" aria-label="模型名称" hidden>
+          <input id="agent-key" type="password" placeholder="API Key（首次添加必填）" aria-label="API Key" autocomplete="new-password" maxlength="1000" hidden>
+          <button type="submit" class="icon-button" title="添加并登录 Agent" aria-label="添加并登录 Agent">+</button>
+        </form>
+        <p id="credential-note" class="credential-note" hidden>API Key 只发送到本机服务，并保存到 macOS 钥匙串。</p>
+        <label id="device-option" class="device-option"><input id="device-auth" type="checkbox"> 使用设备码登录</label>
+      </section>
+
+      <section class="panel statistics-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">本地统计</p>
+            <h2>协作使用情况</h2>
+          </div>
+          <span class="zero-token">零 Token</span>
+        </div>
+        <div id="statistics" class="statistics-grid">
+          <div><strong>0</strong><span>运行</span></div>
+          <div><strong>0</strong><span>项目</span></div>
+          <div><strong>0</strong><span>已完成</span></div>
+          <div><strong>0</strong><span>Agent 任务</span></div>
+        </div>
+        <div id="cost-summary" class="cost-summary">API 估算费用：¥0.0000</div>
+        <div id="project-statistics" class="project-statistics">
+          <div class="empty-inline">运行协作后会按项目自动汇总</div>
+        </div>
+      </section>
+
+      <section class="panel activity-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">运行状态</p>
+            <h2>最近任务</h2>
+          </div>
+          <button id="refresh" class="text-button" type="button">刷新</button>
+        </div>
+        <div id="jobs" class="job-list">
+          <div class="empty-state">还没有运行记录</div>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <template id="account-template">
+    <div class="account-row">
+      <span class="avatar"></span>
+      <div><strong></strong><small></small></div>
+      <span class="status-dot"></span>
+    </div>
+  </template>
+
+  <div id="launch-guard" class="launch-guard" hidden>
+    <div class="launch-card">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3 4.2 7.5v9L12 21l7.8-4.5v-9L12 3Z"/><path d="m8 10 4-2.3 4 2.3v4.5l-4 2.3-4-2.3V10Z"/></svg>
+      </span>
+      <p class="eyebrow">需要启动本地服务</p>
+      <h2>请双击 start.command</h2>
+      <p>你现在打开的是网页源文件，因此无法读取 Codex 账号和项目。关闭这个页面，在同一文件夹中双击 <strong>start.command</strong>，控制台会自动重新打开。</p>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

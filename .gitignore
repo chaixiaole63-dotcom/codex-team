@@ -1,0 +1,18 @@
+# Local runtime state (accounts, auth, logs, run history)
+codex-team-state/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# macOS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+team.json
