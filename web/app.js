@@ -215,6 +215,10 @@ async function refresh() {
       document.querySelector('#routing-policy').value = data.preferences?.routing_policy || 'balanced';
       document.querySelector('#routing-policy').dataset.loaded = 'true';
     }
+    if (!document.querySelector('#timeout-minutes').dataset.loaded) {
+      document.querySelector('#timeout-minutes').value = data.preferences?.timeout_minutes || 120;
+      document.querySelector('#timeout-minutes').dataset.loaded = 'true';
+    }
     renderJobs(data.jobs);
     renderStatistics(data.statistics || {});
     const running = data.jobs.some(item => item.status === 'running');
@@ -275,7 +279,8 @@ document.querySelector('#run-form').addEventListener('submit', async event => {
           return {id, provider: agent.provider, account: id, model: agent.model};
         }),
         max_parallel_tasks: document.querySelector('#parallel').value,
-        routing_policy: document.querySelector('#routing-policy').value
+        routing_policy: document.querySelector('#routing-policy').value,
+        timeout_minutes: document.querySelector('#timeout-minutes').value
       })
     });
     message.textContent = '协作配置已保存，可从项目对话调用';

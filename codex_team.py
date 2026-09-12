@@ -15,6 +15,12 @@ import uuid
 from contextlib import contextmanager
 
 
+def timeout_label(seconds):
+    if seconds % 3600 == 0:
+        return f'{seconds // 3600} 小时'
+    return f'{seconds // 60} 分钟'
+
+
 def run(args, cwd=None, env=None):
     p = subprocess.run(args, cwd=cwd, env=env, text=True, capture_output=True)
     if p.returncode:
@@ -219,6 +225,16 @@ def invoke(binary, root, account, workspace, prompt, logs, timeout, model=None,
                                 stdout=out, stderr=err, text=True, start_new_session=True)
         try:
             proc.communicate(prompt, timeout=timeout)
+        except subprocess.TimeoutExpired as exc:
+            try:
+                os.killpg(proc.pid, signal.SIGTERM)
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
+            except ProcessLookupError:
+                pass
+            raise RuntimeError(f'{account} 达到 {timeout_label(timeout)}执行上限') from exc
         except BaseException:
             try:
                 os.killpg(proc.pid, signal.SIGTERM)
@@ -274,6 +290,16 @@ def invoke_kimi(binary, root, agent, workspace, prompt, logs, timeout, model=Non
                                 stdout=out, stderr=err, text=True, start_new_session=True)
         try:
             proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired as exc:
+            try:
+                os.killpg(proc.pid, signal.SIGTERM)
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
+            except ProcessLookupError:
+                pass
+            raise RuntimeError(f'{agent} (Kimi) 达到 {timeout_label(timeout)}执行上限') from exc
         except BaseException:
             try:
                 os.killpg(proc.pid, signal.SIGTERM)
@@ -322,6 +348,10 @@ def invoke_qwen(binary, root, spec, workspace, prompt, logs, timeout, model=None
                 pass
             raise
     if proc.returncode:
+        if proc.returncode == 55:
+            raise RuntimeError(
+                f"{spec['id']} ({spec['provider']}) 达到 {timeout_label(timeout)}执行上限"
+            )
         raise RuntimeError(f"{spec['id']} ({spec['provider']}) 执行失败，退出码 {proc.returncode}，日志: {logs}")
     try:
         events = json.loads(events_path.read_text())
@@ -519,7 +549,7 @@ def plan_tasks(args, root, config, repo, base, directory, master, worker_specs_l
 def execute(args, root):
     config = json.loads(Path(args.config).read_text())
     repo = Path(config['repo']).expanduser().resolve()
-    timeout = int(config.get('timeout_seconds', 1800))
+    timeout = int(config.get('timeout_seconds', 7200))
     if timeout < 1:
         raise ValueError('timeout_seconds 必须为正数')
     automatic = bool(config.get('auto_plan', False))

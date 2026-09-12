@@ -1,7 +1,7 @@
 {
   "repo": "/替换为你的项目绝对路径",
   "goal": "为现有项目添加用户个人资料编辑功能，遵循现有架构和测试规范。",
-  "timeout_seconds": 1800,
+  "timeout_seconds": 7200,
   "auto_plan": true,
   "master_account": "master",
   "worker_agents": [

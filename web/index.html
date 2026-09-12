@@ -53,6 +53,17 @@
             </select>
             <small>主账号选择能胜任任务的合适 Agent</small>
           </label>
+          <label class="field">
+            <span>单个 Agent 时间上限</span>
+            <select id="timeout-minutes">
+              <option value="30">30 分钟</option>
+              <option value="60">1 小时</option>
+              <option value="120" selected>2 小时（推荐）</option>
+              <option value="240">4 小时（资料与 OCR）</option>
+              <option value="480">8 小时</option>
+            </select>
+            <small>完成后会立即结束，不会占满所选时长</small>
+          </label>
         </div>
 
         <fieldset class="workers">

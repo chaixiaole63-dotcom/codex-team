@@ -698,11 +698,13 @@ class Handler(BaseHTTPRequestHandler):
                     max(1, int(data.get('max_parallel_tasks', len(normalized)))),
                     len(normalized)
                 )
+                timeout_minutes = min(max(15, int(data.get('timeout_minutes', 120))), 480)
                 preferences = {
                     'master_account': master,
                     'worker_agents': normalized,
                     'max_parallel_tasks': maximum,
                     'routing_policy': routing_policy,
+                    'timeout_minutes': timeout_minutes,
                     'checks': []
                 }
                 atomic_json(STATE / 'ui' / 'preferences.json', preferences)
@@ -742,12 +744,14 @@ class Handler(BaseHTTPRequestHandler):
                 for line in data.get('checks', '').splitlines():
                     if line.strip():
                         checks.append(shlex.split(line))
+                timeout_minutes = min(max(15, int(data.get('timeout_minutes', 120))), 480)
                 config = {
-                    'repo': str(repo), 'goal': goal, 'timeout_seconds': 1800,
+                    'repo': str(repo), 'goal': goal, 'timeout_seconds': timeout_minutes * 60,
                     'auto_plan': True, 'master_account': master,
                     'worker_agents': normalized,
                     'max_parallel_tasks': min(max(1, int(data.get('max_parallel_tasks', len(normalized)))), len(normalized)),
                     'routing_policy': routing_policy,
+                    'timeout_minutes': timeout_minutes,
                     'checks': checks
                 }
                 config_id = uuid.uuid4().hex
@@ -758,6 +762,7 @@ class Handler(BaseHTTPRequestHandler):
                     'worker_agents': normalized,
                     'max_parallel_tasks': config['max_parallel_tasks'],
                     'routing_policy': routing_policy,
+                    'timeout_minutes': timeout_minutes,
                     'checks': checks
                 })
                 record = launch_job(

@@ -54,12 +54,13 @@ def main():
     if not preferences_path.exists():
         raise RuntimeError('尚未保存 Agent 配置；请先双击 start.command，在控制台选择主账号和执行 Agent，然后点击“保存协作配置”')
     preferences = json.loads(preferences_path.read_text())
+    timeout_minutes = min(max(15, int(preferences.get('timeout_minutes', 120))), 480)
     project = Path(args.repo).expanduser().resolve()
     if not project.is_dir():
         raise RuntimeError('项目目录不存在')
     ensure_git(project)
     config = {
-        'repo': str(project), 'goal': args.goal, 'timeout_seconds': 1800,
+        'repo': str(project), 'goal': args.goal, 'timeout_seconds': timeout_minutes * 60,
         'auto_plan': True, 'master_account': preferences['master_account'],
         'worker_agents': preferences['worker_agents'],
         'max_parallel_tasks': preferences.get('max_parallel_tasks', len(preferences['worker_agents'])),

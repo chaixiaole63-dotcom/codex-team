@@ -4,7 +4,7 @@ Python 3.9+，macOS/Linux，Git 和已安装的 Codex CLI。主账号负责检�
 
 ## 图形界面（推荐）
 
-在 macOS 上双击 `start.command`，浏览器会打开本地控制台。先添加并登录 Agent，再选择主账号、执行 Agent、最大并行数和模型路由策略，点击“保存协作配置”。主账号必须是 Codex，执行 Agent 可以混用 Codex、Kimi 和其他已配置模型。项目和目标不在控制台重复填写，而是在目标项目的 Codex 对话中通过 `$codex-team` 交给主账号。
+在 macOS 上双击 `start.command`，浏览器会打开本地控制台。先添加并登录 Agent，再选择主账号、执行 Agent、最大并行数、模型路由策略和单个 Agent 时间上限，点击“保存协作配置”。默认上限为 2 小时；包含大量资料解析或 OCR 的任务可选 4 小时，Agent 完成后会立即结束。主账号必须是 Codex，执行 Agent 可以混用 Codex、Kimi 和其他已配置模型。项目和目标不在控制台重复填写，而是在目标项目的 Codex 对话中通过 `$codex-team` 交给主账号。
 
 路由策略提供“成本优先、均衡、质量优先”三种简单选择。成本优先遵循 cheapest capable model：边界清晰的检索、局部实现、测试和文档优先交给低成本 Agent，复杂架构、跨模块推理和高风险修改保留给强模型；主账号不会为了用满并行数而强行拆分任务。路由只是决策提示，实际节省必须以真实 usage、测试结果和后续 Benchmark 为准。
 

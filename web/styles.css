@@ -129,7 +129,7 @@ input::placeholder, textarea::placeholder { color: #626d80; }
 }
 .project-prep button:hover { background: #332c1e; }
 .project-prep button:disabled { opacity: .55; cursor: wait; }
-.account-grid { display: grid; grid-template-columns: minmax(220px, 1fr) 170px 210px; gap: 18px; }
+.account-grid { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 18px; }
 .conversation-hint {
   display: grid; gap: 7px; padding: 16px;
   border: 1px solid #293653; border-radius: 12px;
