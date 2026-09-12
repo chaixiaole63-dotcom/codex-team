@@ -146,9 +146,21 @@ def keychain_secret(account):
     return result.stdout.strip()
 
 
-def qwen_env(spec):
+def qwen_env(root, spec):
     env = os.environ.copy()
     env['QWEN_CODE_SUPPRESS_YOLO_WARNING'] = '1'
+    qwen_home = root / 'agents' / name(spec['id']) / 'qwen-home'
+    qwen_runtime = root / 'agents' / name(spec['id']) / 'qwen-runtime'
+    for folder in (qwen_home, qwen_runtime):
+        folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+        folder.chmod(0o700)
+    env['QWEN_HOME'] = str(qwen_home)
+    env['QWEN_RUNTIME_DIR'] = str(qwen_runtime)
+    # The coordinator supplies its own sandbox flag. Do not let a shell-level
+    # override silently disable or replace that isolation.
+    env.pop('QWEN_SANDBOX', None)
+    if sys.platform == 'darwin':
+        env.setdefault('SEATBELT_PROFILE', 'permissive-open')
     credential_id = spec.get('credential_id')
     if credential_id:
         env['OPENAI_API_KEY'] = keychain_secret(credential_id)
@@ -283,14 +295,19 @@ def invoke_kimi(binary, root, agent, workspace, prompt, logs, timeout, model=Non
 def invoke_qwen(binary, root, spec, workspace, prompt, logs, timeout, model=None):
     logs.mkdir(parents=True, exist_ok=True)
     command = [binary, '-p', prompt, '--auth-type', 'openai', '--output-format', 'json',
-               '--approval-mode', 'auto', '--max-wall-time', f'{timeout}s']
+               '--approval-mode', 'yolo', '--max-wall-time', f'{timeout}s']
+    # A coordinator launched by the Codex skill already inherits the Codex OS
+    # sandbox. macOS rejects nesting Qwen's Seatbelt sandbox inside it. Direct
+    # terminal launches have no outer sandbox, so enable Qwen's own isolation.
+    if not os.environ.get('CODEX_SANDBOX'):
+        command.append('--sandbox')
     selected_model = model or spec.get('model')
     if selected_model:
         command.extend(['--model', selected_model])
     (logs / 'prompt.txt').write_text(prompt)
     events_path = logs / 'events.json'
     with agent_lock(root, spec['id']), events_path.open('w') as out, (logs / 'stderr.log').open('w') as err:
-        proc = subprocess.Popen(command, cwd=workspace, env=qwen_env(spec),
+        proc = subprocess.Popen(command, cwd=workspace, env=qwen_env(root, spec),
                                 stdout=out, stderr=err, text=True, start_new_session=True)
         try:
             proc.wait(timeout=timeout + 10)
@@ -314,6 +331,18 @@ def invoke_qwen(binary, root, spec, workspace, prompt, logs, timeout, model=None
         result, raw_usage = qwen_result(events)
     except ValueError as exc:
         raise RuntimeError(f"{spec['id']} ({spec['provider']}) 返回的事件格式无效") from exc
+    final = next((event for event in reversed(events) if event.get('type') == 'result'), {})
+    denials = final.get('permission_denials') if isinstance(final, dict) else None
+    if denials:
+        blocked = sorted({
+            item.get('tool_name', 'unknown') for item in denials if isinstance(item, dict)
+        })
+        detail = ', '.join(blocked) or 'unknown'
+        raise RuntimeError(
+            f"{spec['id']} ({spec['provider']}) 的必要操作被权限规则阻止: {detail}"
+        )
+    if isinstance(final, dict) and (final.get('is_error') or final.get('subtype') not in (None, 'success')):
+        raise RuntimeError(f"{spec['id']} ({spec['provider']}) 未正常完成")
     if not result.strip():
         raise RuntimeError(f"{spec['id']} ({spec['provider']}) 未生成结果报告")
     (logs / 'result.md').write_text(result)

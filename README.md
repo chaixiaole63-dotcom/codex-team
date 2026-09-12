@@ -54,7 +54,7 @@ curl -fsSL https://code.kimi.com/kimi-code/install.sh | bash
 
 这三类 Agent 统一使用 Qwen Code CLI。安装 Qwen Code 后，后续认证可以直接在 Codex Team 前端完成，不必再进入 `qwen /auth`。
 
-重启控制台后，在 Agent 类型中选择“阿里通义”“DeepSeek”或“智谱 GLM”，填写账号名称、模型名称和对应厂商的 API Key，然后点击 `+`。默认模型分别为 `qwen3-coder-plus`、`deepseek-v4-pro` 和 `glm-5`，可在界面覆盖。执行器使用 `qwen -p`、OpenAI 兼容接口、JSON 输出和自动审批模式，并由外层超时及 Git worktree 约束任务。
+重启控制台后，在 Agent 类型中选择“阿里通义”“DeepSeek”或“智谱 GLM”，填写账号名称、模型名称和对应厂商的 API Key，然后点击 `+`。默认模型分别为 `qwen3-coder-plus`、`deepseek-v4-pro` 和 `glm-5`，可在界面覆盖。执行器使用 `qwen -p`、OpenAI 兼容接口和 JSON 输出。无人值守任务采用 Qwen Code 的全自动审批。从 Codex 对话调用时沿用外层 Codex 沙箱；从普通终端独立运行时启用 Qwen 沙箱，在 macOS 上使用内置 Seatbelt。任务文件始终写入独立 Git worktree，外层还有运行超时、Agent 锁和 Git 提交检查。若 Qwen Code 返回权限拒绝，调度器会把任务标为失败，不再把只有文字方案、没有文件改动的结果显示成“已完成”。Linux 从普通终端运行此模式需要按 Qwen Code 文档准备 Docker 或 Podman 沙箱。
 
 API Key 通过只监听 `127.0.0.1` 的本机服务提交，保存在 macOS 钥匙串服务 `CodexTeam-Agent-Key` 中。Agent 配置、项目和日志只保存钥匙串条目的内部名称，不保存 Key。运行 Agent 时才从钥匙串读取并注入子进程环境。若同名 Agent 已经保存过 Key，更新模型时可以把 Key 留空。
 
