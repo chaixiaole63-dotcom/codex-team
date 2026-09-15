@@ -61,8 +61,7 @@ function renderAccounts(accounts, capabilities = {}, preferences = {}) {
   const oldWorkers = selectedBeforeRender.length ? selectedBeforeRender : preferredWorkers;
   const workerList = document.querySelector('#worker-list');
   workerList.replaceChildren();
-  const available = accounts.filter(account => account.has_credentials &&
-    !(account.provider === 'codex' && account.name === master.value));
+  const available = accounts.filter(account => account.has_credentials);
   if (!available.length) {
     workerList.innerHTML = '<div class="empty-inline">至少添加一个可用的执行 Agent</div>';
   } else {
@@ -75,7 +74,9 @@ function renderAccounts(accounts, capabilities = {}, preferences = {}) {
       input.value = account.name;
       input.checked = oldWorkers.includes(account.name);
       const span = document.createElement('span');
-      span.textContent = providerNames[account.provider] + ' · ' + (account.label || account.name);
+      const isMaster = account.provider === 'codex' && account.name === master.value;
+      span.textContent = providerNames[account.provider] + ' · ' + (account.label || account.name) +
+        (isMaster ? '（主账号）' : '');
       label.append(input, span);
       workerList.append(label);
     }

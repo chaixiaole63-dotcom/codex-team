@@ -543,7 +543,7 @@ def snapshot():
     }
 
 
-def normalize_worker_agents(worker_agents, master):
+def normalize_worker_agents(worker_agents):
     if not isinstance(worker_agents, list) or not worker_agents:
         raise ValueError('至少选择一个执行 Agent')
     normalized = []
@@ -561,8 +561,6 @@ def normalize_worker_agents(worker_agents, master):
         entry = {'id': agent_id, 'provider': provider}
         if provider == 'codex':
             entry['account'] = name(item.get('account', agent_id))
-            if entry['account'] == master:
-                raise ValueError('主账号不能同时作为执行 Agent')
         if item.get('model'):
             entry['model'] = str(item['model'])
         if provider in QWEN_PROVIDERS:
@@ -690,7 +688,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json(202, record)
             if self.path == '/api/preferences':
                 master = name(data.get('master_account'))
-                normalized = normalize_worker_agents(data.get('worker_agents', []), master)
+                normalized = normalize_worker_agents(data.get('worker_agents', []))
                 routing_policy = str(data.get('routing_policy', 'balanced'))
                 if routing_policy not in ('cost', 'balanced', 'quality'):
                     raise ValueError('模型路由策略无效')
@@ -736,7 +734,7 @@ class Handler(BaseHTTPRequestHandler):
                 if len(goal) < 4:
                     raise ValueError('请写清楚项目目标')
                 master = name(data.get('master_account'))
-                normalized = normalize_worker_agents(data.get('worker_agents', []), master)
+                normalized = normalize_worker_agents(data.get('worker_agents', []))
                 routing_policy = str(data.get('routing_policy', 'balanced'))
                 if routing_policy not in ('cost', 'balanced', 'quality'):
                     raise ValueError('模型路由策略无效')

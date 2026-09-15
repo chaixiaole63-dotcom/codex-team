@@ -4,7 +4,7 @@ Python 3.9+，macOS/Linux，Git 和已安装的 Codex CLI。主账号负责检�
 
 ## 图形界面（推荐）
 
-在 macOS 上双击 `start.command`，浏览器会打开本地控制台。先添加并登录 Agent，再选择主账号、执行 Agent、最大并行数、模型路由策略和单个 Agent 时间上限，点击“保存协作配置”。默认上限为 2 小时；包含大量资料解析或 OCR 的任务可选 4 小时，Agent 完成后会立即结束。主账号必须是 Codex，执行 Agent 可以混用 Codex、Kimi 和其他已配置模型。项目和目标不在控制台重复填写，而是在目标项目的 Codex 对话中通过 `$codex-team` 交给主账号。
+在 macOS 上双击 `start.command`，浏览器会打开本地控制台。先添加并登录 Agent，再选择主账号、执行 Agent、最大并行数、模型路由策略和单个 Agent 时间上限，点击“保存协作配置”。默认上限为 2 小时；包含大量资料解析或 OCR 的任务可选 4 小时，Agent 完成后会立即结束。主账号必须是 Codex，也可以同时加入执行 Agent 池；执行 Agent 可以混用 Codex、Kimi 和其他已配置模型。规划、并行执行和最终验收按阶段依次运行，同一 Agent 在一轮执行中最多承担一个任务。项目和目标不在控制台重复填写，而是在目标项目的 Codex 对话中通过 `$codex-team` 交给主账号。
 
 路由策略提供“成本优先、均衡、质量优先”三种简单选择。成本优先遵循 cheapest capable model：边界清晰的检索、局部实现、测试和文档优先交给低成本 Agent，复杂架构、跨模块推理和高风险修改保留给强模型；主账号不会为了用满并行数而强行拆分任务。路由只是决策提示，实际节省必须以真实 usage、测试结果和后续 Benchmark 为准。
 
@@ -118,7 +118,7 @@ python3 codex_team.py --state ../codex-team-state run team.json
 
 ## 账号与隔离边界
 
-Codex 别名使用独立 `CODEX_HOME` 和 file 凭据存储；Kimi 别名使用独立 `KIMI_CODE_HOME`。脚本不会复制当前 App 的登录信息。主账号和执行 Agent 必须使用不同别名，Agent 列表不能重复。各 Agent 使用自己的权限与额度，额度或鉴权失败会报告错误。
+Codex 别名使用独立 `CODEX_HOME` 和 file 凭据存储；Kimi 别名使用独立 `KIMI_CODE_HOME`。脚本不会复制当前 App 的登录信息。主账号可以加入执行 Agent 池，但同一轮最多承担一个执行任务；其他 Agent 列表不能重复。各 Agent 使用自己的权限与额度，额度或鉴权失败会报告错误。
 
 仅添加你拥有或获准使用的账号，并遵守各账号所属组织的规则。不要用账号池规避额度、访问控制或其他平台限制。
 

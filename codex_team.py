@@ -557,8 +557,6 @@ def execute(args, root):
         master = name(config['master_account'])
         specs = worker_specs(config)
         workers = [item['id'] for item in specs]
-        if any(item['provider'] == 'codex' and item['account'] == master for item in specs):
-            raise ValueError('主账号不能同时作为执行 Agent')
         reviewer = master
         known_accounts = [item['account'] for item in specs if item['provider'] == 'codex'] + [master]
     else:

@@ -150,6 +150,7 @@ input::placeholder, textarea::placeholder { color: #626d80; }
 .workers { margin: 0; padding: 17px; border: 1px solid var(--line); border-radius: 12px; }
 .workers legend { padding: 0 7px; }
 .worker-list { display: flex; flex-wrap: wrap; gap: 9px; }
+.worker-note { display: block; margin-top: 11px; color: var(--muted); }
 .worker-choice input { position: absolute; opacity: 0; pointer-events: none; }
 .worker-choice span {
   display: inline-flex; align-items: center; gap: 8px;
