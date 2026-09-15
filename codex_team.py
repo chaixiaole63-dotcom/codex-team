@@ -515,6 +515,8 @@ def plan_tasks(args, root, config, repo, base, directory, master, worker_specs_l
     agent_summary = json.dumps([
         {
             'id': item['id'], 'provider': item['provider'], 'model': item.get('model'),
+            'role': ('lead_backup' if item['provider'] == 'codex' and
+                     item.get('account') == master else 'worker'),
             'cost_hint': ('lower_cost_api' if item['provider'] in ('deepseek', 'kimi-api')
                           else 'subscription_or_plan')
         }
@@ -528,6 +530,8 @@ def plan_tasks(args, root, config, repo, base, directory, master, worker_specs_l
         "不要创建有先后依赖的任务。每个任务的 prompt 必须写清楚实现目标、允许修改的目录或文件范围、"
         "与其他任务约定的接口和必须运行的测试。不同任务的写入范围不能重叠；如果无法安全并行，就只生成一个任务。"
         "根据任务难度、厂商、模型能力和路由要求为每个任务选择 account；同一 Agent 最多分配一个任务。"
+        "role 为 lead_backup 的 Agent 是主账号：默认优先把任务交给其他合适的 worker；只有主账号明显更适合、"
+        "其他 Agent 数量不足，或目标不值得拆分且由主账号独立完成更合理时，才给主账号分配最多一个任务。"
         "routing_reason 用一句话说明为什么该 Agent 足以胜任且符合当前路由策略。"
         "任务 id 使用简短英文、数字、下划线或连字符。"
     )
