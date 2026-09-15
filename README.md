@@ -2,6 +2,15 @@
 
 Python 3.9+，macOS/Linux，Git 和已安装的 Codex CLI。主账号负责检查仓库、自动拆分任务、根据厂商和模型能力选择执行 Agent，并完成最终验收；调度器只负责启动进程、隔离工作区、收集结果和合并。执行 Agent 可以混用多个 Codex 账号、Kimi Code、阿里通义、DeepSeek 和智谱 GLM。每个任务都在独立 Git worktree 中完成，最后由主 Codex 集成和检查。
 
+## 主要功能
+
+- 在一个本地页面配置多个 Codex 账号和多家 Coding 模型。
+- 主账号自动判断是否拆分、选择 Agent，并在最后统一集成和验收。
+- 主账号可作为备用执行者，但默认优先把任务交给其他合适的 Agent。
+- 每项任务使用独立 Git 工作区，避免多个 Agent 同时覆盖同一份文件。
+- 按项目、厂商和模型记录 Token、运行结果与 API 费用估算。
+- 账号凭据、API Key、项目配置和运行日志只保留在本机。
+
 ## 图形界面（推荐）
 
 在 macOS 上双击 `start.command`，浏览器会打开本地控制台。先添加并登录 Agent，再选择主账号、执行 Agent、最大并行数、模型路由策略和单个 Agent 时间上限，点击“保存协作配置”。默认上限为 2 小时；包含大量资料解析或 OCR 的任务可选 4 小时，Agent 完成后会立即结束。主账号必须是 Codex，也可以同时加入执行 Agent 池；执行 Agent 可以混用 Codex、Kimi 和其他已配置模型。规划、并行执行和最终验收按阶段依次运行，同一 Agent 在一轮执行中最多承担一个任务。主账号加入执行池后被视为备用执行者，规划时优先使用其他合适的 Agent，只有主账号明显更合适、Agent 数量不足或目标不值得拆分时才分配给它。项目和目标不在控制台重复填写，而是在目标项目的 Codex 对话中通过 `$codex-team` 交给主账号。
@@ -17,6 +26,16 @@ Python 3.9+，macOS/Linux，Git 和已安装的 Codex CLI。主账号负责检�
 GitHub 用于同步程序代码和文档，不会把仓库绑定到某一台电脑。另一台 Mac 可以使用自己的 GitHub SSH Key 或 `gh auth login` 克隆同一个仓库，然后在本机运行 `install-skill.command` 和 `start.command`。
 
 账号登录、API Key、执行池配置、运行日志与项目统计默认不上传 GitHub。每台 Mac 需要分别登录 Codex/Kimi、配置外部模型 Key 并保存协作配置；这是为了避免凭据和本地项目记录进入仓库。iPad 和 iPhone 可以通过 GitHub App、网页或 Codespaces 查看代码、Issue 和提交，但不能直接运行依赖本地 Git 与各模型 CLI 的调度器。若需要从移动设备发起任务，可以后续增加 GitHub Issue 任务队列，由一台保持在线的 Mac 领取执行。
+
+## 同步到 GitHub
+
+双击 `github-sync.command` 即可同步。第一次运行会引导登录 GitHub，自动创建名为 `codex-team` 的私有仓库、填写项目简介并添加主题标签；以后再次双击会提交本地修改、拉取远程更新并推送当前分支。也可以在终端给本次同步指定说明：
+
+```bash
+./github-sync.command "改进 Agent 路由规则"
+```
+
+脚本会在上传前拦截 `codex-team-state`、`team.json`、`.env`、`.pem` 和 `.key` 等本地配置或凭据。另一台 Mac 克隆仓库后仍需分别登录各 Agent，并重新填写 API Key。
 
 不要直接打开 `web/index.html`。直接打开时地址以 `file://` 开头，本地服务没有启动，页面无法读取账号和项目；新版页面会显示启动提示。正确打开后的地址是 `http://127.0.0.1:8765/`。
 
