@@ -95,19 +95,32 @@ $codex-team 请多个 Agent 一起完成：制作登录页面，并检查现有�
 
 iPhone 和 iPad 可以查看 GitHub 上的代码，但不能直接运行依赖 Mac 本地程序的 Codex Team。若希望手机发起任务，需要让一台 Mac 保持在线，并另外增加远程任务入口。
 
-### 可以只在 Codex 里从 GitHub 安装这个 Skill 吗？
+### 可以直接在 Codex 里从 GitHub 安装吗？
 
-Codex 可以从 GitHub 安装普通 Skill，但 Codex Team 还包含本地设置页面、账号隔离和调度程序。只安装 `skill/codex-team` 文件夹会缺少这些程序。
+可以。Codex Team 现在已经打包为完整 Plugin，安装时会一起取得 Skill、本地设置页面和调度程序。
 
-因此当前推荐安装完整 Codex Team 文件夹，再双击 `setup.command`。安装完成后，日常使用就和普通 Skill 一样，直接在 Codex 对话中输入 `$codex-team`。
+在 Codex 中直接说：
 
-未来可以把完整程序封装为 Codex 插件或安装包，做到从插件页面一次安装；调度程序仍需要运行在能访问项目和各家 CLI 的电脑上。
+```text
+请从 GitHub 仓库 chaixiaole63-dotcom/codex-team 安装 Codex Team 插件
+```
+
+也可以在终端安装：
+
+```bash
+codex plugin marketplace add chaixiaole63-dotcom/codex-team
+codex plugin add codex-team@codex-team-marketplace
+```
+
+当前 GitHub 仓库是私人仓库，因此只有已获授权并配置 GitHub 登录的用户能安装。仓库公开后，其他人也可以使用同样的安装方式。
+
+首次输入 `$codex-team` 时，如果还没有设置团队，插件会自动打开本地设置页面。配置并保存一次，之后直接在项目对话中使用即可。
 
 ## 更新和 GitHub 同步
 
 双击 `github-sync.command` 可以把程序代码同步到 GitHub。第一次会帮助创建仓库；以后会上传本地更新并下载其他电脑上的更新。
 
-账号登录、API Key、团队设置、项目记录和运行日志不会上传。仓库是否公开由 GitHub 的可见性设置决定；公开仓库时，任何人都能看到程序代码，但仍看不到被排除的本地凭据。
+账号登录、API Key、团队设置、项目记录和运行日志保存在 `~/.codex/codex-team-data`，不会随插件更新或 GitHub 同步上传。仓库是否公开由 GitHub 的可见性设置决定；公开仓库时，任何人都能看到程序代码，但仍看不到被排除的本地凭据。
 
 不要直接双击 `web/index.html`。那只是一份网页文件，无法读取本机账号。请使用 `setup.command` 或 `start.command`，正确地址会以 `http://127.0.0.1` 开头。
 
@@ -115,7 +128,7 @@ Codex 可以从 GitHub 安装普通 Skill，但 Codex Team 还包含本地设置
 
 运行环境为 macOS/Linux、Python 3.9+、Git 和 Codex CLI。Kimi Agent 需要 Kimi Code；Kimi API、通义、DeepSeek 和智谱 Agent 通过 Qwen Code 的 OpenAI 兼容方式运行。
 
-配置和运行数据默认位于 `codex-team-state`。Codex 账号使用独立 `CODEX_HOME`，Kimi 账号使用独立 `KIMI_CODE_HOME`，API Key 在 macOS 钥匙串的 `CodexTeam-Agent-Key` 服务中保存。
+配置和运行数据默认位于 `~/.codex/codex-team-data`。Codex 账号使用独立 `CODEX_HOME`，Kimi 账号使用独立 `KIMI_CODE_HOME`，API Key 在 macOS 钥匙串的 `CodexTeam-Agent-Key` 服务中保存。
 
 命令行运行方式：
 
@@ -123,7 +136,7 @@ Codex 可以从 GitHub 安装普通 Skill，但 Codex Team 还包含本地设置
 python3 codex_team.py --state ./codex-team-state run team.json
 ```
 
-每个任务会创建 Git worktree。主账号负责自动规划和验收；调度器负责进程、隔离、超时、结果收集和合并。运行结果保存在 `codex-team-state/runs/<运行编号>/`，包括计划、状态、日志、检查结果和集成工作区。
+每个任务会创建 Git worktree。主账号负责自动规划和验收；调度器负责进程、隔离、超时、结果收集和合并。运行结果保存在 `~/.codex/codex-team-data/runs/<运行编号>/`，包括计划、状态、日志、检查结果和集成工作区。
 
 项目若没有配置验收命令，最终状态为 `needs_validation`；配置的检查全部通过时为 `checks_passed`。集成结果不会自动推送、公开或部署。
 

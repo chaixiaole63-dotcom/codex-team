@@ -1,0 +1,16 @@
+{
+  "repo": "/替换为你的项目绝对路径",
+  "goal": "为现有项目添加用户个人资料编辑功能，遵循现有架构和测试规范。",
+  "timeout_seconds": 7200,
+  "auto_plan": true,
+  "master_account": "master",
+  "worker_agents": [
+    {"id": "worker-1", "provider": "codex", "account": "worker-1"},
+    {"id": "kimi-1", "provider": "kimi"},
+    {"id": "qwen-1", "provider": "qwen", "model": "qwen3-coder-plus"},
+    {"id": "deepseek-1", "provider": "deepseek", "model": "deepseek-v4-pro"},
+    {"id": "glm-1", "provider": "zhipu", "model": "glm-5"}
+  ],
+  "max_parallel_tasks": 5,
+  "checks": []
+}

@@ -1,0 +1,30 @@
+{
+  "name": "codex-team",
+  "version": "1.0.0",
+  "description": "Let one Codex coordinate multiple local coding agents to complete a project.",
+  "author": {
+    "name": "Codex Team"
+  },
+  "homepage": "https://github.com/chaixiaole63-dotcom/codex-team",
+  "repository": "https://github.com/chaixiaole63-dotcom/codex-team",
+  "license": "MIT",
+  "keywords": ["codex", "multi-agent", "kimi", "deepseek", "qwen", "glm"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Team",
+    "shortDescription": "让多个本地 Coding Agent 分工完成项目",
+    "longDescription": "由主 Codex 理解目标和验收结果，自动调度多个 Codex 账号、Kimi、通义、DeepSeek 与智谱 Agent，在隔离工作区中协作完成项目。",
+    "developerName": "Codex Team",
+    "category": "Productivity",
+    "capabilities": ["Multi-agent", "Local execution", "Project editing"],
+    "defaultPrompt": [
+      "$codex-team 请多个 Agent 一起完成当前项目目标",
+      "$codex-team 检查这个项目并分工修复问题",
+      "$codex-team 按成本优先完成这个任务并运行检查"
+    ],
+    "brandColor": "#5B7CFA",
+    "composerIcon": "./assets/logo.svg",
+    "logo": "./assets/logo.svg",
+    "logoDark": "./assets/logo.svg"
+  }
+}

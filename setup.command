@@ -35,16 +35,31 @@ if [[ -z "$CODEX_BIN" ]]; then
   exit 1
 fi
 
+OLD_STATE="$PWD/codex-team-state"
+NEW_STATE="${CODEX_TEAM_STATE:-$HOME/.codex/codex-team-data}"
+if [[ -d "$OLD_STATE" && ! -e "$NEW_STATE" ]]; then
+  mkdir -p "${NEW_STATE:h}"
+  mv "$OLD_STATE" "$NEW_STATE"
+  echo "原有账号和设置已安全迁移。"
+fi
+
+python3 "$PWD/scripts/build_plugin.py"
+
+if ! "$CODEX_BIN" plugin marketplace list --json 2>/dev/null | grep -q '"name": "codex-team-marketplace"'; then
+  "$CODEX_BIN" plugin marketplace add "$PWD"
+fi
+"$CODEX_BIN" plugin add codex-team@codex-team-marketplace --json >/dev/null
+
 SKILLS_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
-mkdir -p "$SKILLS_DIR"
-if [[ -e "$SKILLS_DIR/codex-team" && ! -L "$SKILLS_DIR/codex-team" ]]; then
+if [[ -L "$SKILLS_DIR/codex-team" ]]; then
+  rm "$SKILLS_DIR/codex-team"
+elif [[ -e "$SKILLS_DIR/codex-team" ]]; then
   BACKUP="$SKILLS_DIR/codex-team.backup-$(date +%Y%m%d-%H%M%S)"
   mv "$SKILLS_DIR/codex-team" "$BACKUP"
   echo "原有 Skill 已备份到：$BACKUP"
 fi
-ln -sfn "$PWD/skill/codex-team" "$SKILLS_DIR/codex-team"
 
-echo "Skill 已安装。"
+echo "Codex Team 插件已安装，Skill 已包含在插件中。"
 echo "接下来会打开设置页面，请选择主账号和执行 Agent，然后点“保存协作配置”。"
 echo "以后不用再运行这个文件；直接在 Codex 项目对话中输入 \$codex-team 即可。"
 echo ""

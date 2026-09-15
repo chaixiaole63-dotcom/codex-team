@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Codex Team</title>
+  <desc id="desc">Three connected agent nodes inside a hexagon</desc>
+  <defs>
+    <linearGradient id="bg" x1="80" y1="50" x2="430" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#172554"/>
+      <stop offset="1" stop-color="#080B14"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#bg)"/>
+  <path d="M256 71 96 164v184l160 93 160-93V164L256 71Z" fill="none" stroke="#83A6FF" stroke-width="24" stroke-linejoin="round"/>
+  <path d="m181 211 75-43 75 43v86l-75 43-75-43v-86Z" fill="none" stroke="#4ADEA5" stroke-width="20" stroke-linejoin="round"/>
+  <circle cx="181" cy="211" r="26" fill="#83A6FF"/>
+  <circle cx="331" cy="211" r="26" fill="#83A6FF"/>
+  <circle cx="256" cy="340" r="26" fill="#4ADEA5"/>
+  <path d="m202 225 35 71m73-71-35 71m-38-98h38" fill="none" stroke="#EAF0FF" stroke-width="13" stroke-linecap="round"/>
+</svg>

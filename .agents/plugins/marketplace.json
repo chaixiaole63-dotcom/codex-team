@@ -1,0 +1,20 @@
+{
+  "name": "codex-team-marketplace",
+  "interface": {
+    "displayName": "Codex Team Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "codex-team",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex-team"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
