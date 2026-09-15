@@ -37,6 +37,8 @@ GitHub 用于同步程序代码和文档，不会把仓库绑定到某一台电�
 
 脚本会在上传前拦截 `codex-team-state`、`team.json`、`.env`、`.pem` 和 `.key` 等本地配置或凭据。另一台 Mac 克隆仓库后仍需分别登录各 Agent，并重新填写 API Key。
 
+当前仓库启用 `.githooks/post-commit` 后，每次本地提交都会自动推送当前分支，不需要再次启动同步脚本。网络断开或远程出现新提交时，本地提交仍会保留，并把错误写入系统临时目录中的 `codex-team-auto-sync.log`；这时再运行 `github-sync.command`，它会先拉取再推送。另一台 Mac 首次克隆后需要执行 `git config core.hooksPath .githooks` 才会启用同样的自动同步。
+
 不要直接打开 `web/index.html`。直接打开时地址以 `file://` 开头，本地服务没有启动，页面无法读取账号和项目；新版页面会显示启动提示。正确打开后的地址是 `http://127.0.0.1:8765/`。
 
 控制台会自动读取当前 Codex CLI 登录并显示为“当前 Codex”，也会读取 Codex App 保存的本地项目。多账号协作依赖 Git worktree；已有 Git 项目可以直接启动，非 Git 项目需要先在界面中完成一次本地初始化。

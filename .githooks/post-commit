@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+# Keep Git commits reliable: a temporary network failure must not undo or fail
+# the local commit. The next commit or github-sync.command can retry.
+BRANCH="$(git branch --show-current 2>/dev/null)"
+[[ -n "$BRANCH" ]] || exit 0
+git remote get-url origin >/dev/null 2>&1 || exit 0
+
+LOCK_DIR="${TMPDIR:-/tmp}/codex-team-auto-sync.lock"
+mkdir "$LOCK_DIR" 2>/dev/null || exit 0
+trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
+
+LOG_FILE="${TMPDIR:-/tmp}/codex-team-auto-sync.log"
+if git push -u origin "$BRANCH" >"$LOG_FILE" 2>&1; then
+  echo "GitHub 自动同步完成：$BRANCH"
+else
+  echo "GitHub 自动同步暂未完成；本地提交已保留。需要时运行 github-sync.command 重试。"
+fi
+
+exit 0
