@@ -21,7 +21,10 @@ def find_base():
     for parent in resolved.parents:
         if (parent / 'codex_team.py').is_file() and (parent / 'server.py').is_file():
             return parent
-    raise RuntimeError('找不到 Codex Team 程序；请使用同目录的 install-skill.command 安装 Skill')
+    raise RuntimeError(
+        '只安装了 Skill，没有找到 Codex Team 完整程序。'
+        '请下载完整的 Codex Team 文件夹，再双击里面的 setup.command'
+    )
 
 
 def ensure_git(project):
@@ -29,7 +32,7 @@ def ensure_git(project):
                            text=True, capture_output=True)
     if check.returncode == 0:
         if Path(check.stdout.strip()).resolve() != project:
-            raise RuntimeError('当前目录位于另一个 Git 仓库内，请从该仓库根目录调用 Skill')
+            raise RuntimeError('请先在 Codex 中打开整个项目文件夹，再从这个项目的对话中调用 Codex Team')
         return
     if project in (Path('/'), Path.home().resolve()):
         raise RuntimeError('不能把系统目录或用户主目录初始化为项目')
@@ -52,12 +55,15 @@ def main():
         state = sibling_state
     preferences_path = state / 'ui' / 'preferences.json'
     if not preferences_path.exists():
-        raise RuntimeError('尚未保存 Agent 配置；请先双击 start.command，在控制台选择主账号和执行 Agent，然后点击“保存协作配置”')
+        raise RuntimeError(
+            '还没有设置协作团队。请双击 Codex Team 文件夹里的 setup.command，'
+            '在打开的页面选择主账号和执行 Agent，然后点“保存协作配置”'
+        )
     preferences = json.loads(preferences_path.read_text())
     timeout_minutes = min(max(15, int(preferences.get('timeout_minutes', 120))), 480)
     project = Path(args.repo).expanduser().resolve()
     if not project.is_dir():
-        raise RuntimeError('项目目录不存在')
+        raise RuntimeError('当前项目文件夹不存在，请重新在 Codex 中打开项目后再试')
     ensure_git(project)
     config = {
         'repo': str(project), 'goal': args.goal, 'timeout_seconds': timeout_minutes * 60,
@@ -75,7 +81,7 @@ def main():
     if not codex and app_codex.is_file():
         codex = str(app_codex)
     if not codex:
-        raise RuntimeError('没有找到 Codex CLI')
+        raise RuntimeError('没有找到 Codex。请先安装并打开 Codex，登录后再试')
     local_bin = Path.home() / '.local' / 'bin'
     npm_bin = Path.home() / '.npm-global' / 'bin'
     kimi = shutil.which('kimi') or (str(local_bin / 'kimi') if (local_bin / 'kimi').is_file() else 'kimi')
@@ -93,5 +99,5 @@ if __name__ == '__main__':
     try:
         raise SystemExit(main())
     except (Exception, KeyboardInterrupt) as exc:
-        print(f'停止: {exc}', file=sys.stderr)
+        print(f'没有完成：{exc}', file=sys.stderr)
         raise SystemExit(1)

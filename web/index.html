@@ -27,7 +27,7 @@
       <div class="section-heading">
         <div>
           <p class="eyebrow">协作配置</p>
-          <h1>设置主账号与执行池</h1>
+          <h1>选择谁来一起工作</h1>
         </div>
         <span class="decision">项目和目标由当前对话提供</span>
       </div>
@@ -37,7 +37,7 @@
           <label class="field">
             <span>主账号</span>
             <select id="master" required><option value="">选择主账号</option></select>
-            <small>负责分析、分工和最终验收</small>
+            <small>它会理解你的要求、安排工作并检查结果</small>
           </label>
           <label class="field">
             <span>最大并行任务</span>
@@ -67,24 +67,24 @@
         </div>
 
         <fieldset class="workers">
-          <legend>执行 Agent 池</legend>
+          <legend>参与工作的 Agent</legend>
           <div id="worker-list" class="worker-list">
             <div class="empty-inline">添加 Agent 后在这里选择</div>
           </div>
-          <small class="worker-note">主账号是备用执行者：默认优先其他 Agent，必要时最多承担一个任务。</small>
+          <small class="worker-note">勾选你想使用的 Agent。主账号也可以帮忙，但会优先把任务分给其他 Agent。</small>
         </fieldset>
 
         <div class="conversation-hint">
-          <strong>从项目对话发起任务</strong>
-          <span>在目标项目中告诉主账号你的要求；主账号会先判断是否值得拆分，再按路由策略选择 Agent。</span>
-          <code>$codex-team 完成你的项目目标</code>
+          <strong>保存后怎么使用？</strong>
+          <span>打开要处理的项目，在 Codex 对话中输入下面这句话，并把最后一段换成你的要求。</span>
+          <code>$codex-team 请多个 Agent 一起完成：在这里写你的要求</code>
         </div>
 
         <div class="submit-row">
           <p id="form-message" role="status"></p>
           <button class="primary" type="submit">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
-            保存协作配置
+            保存，以后直接使用
           </button>
         </div>
       </form>

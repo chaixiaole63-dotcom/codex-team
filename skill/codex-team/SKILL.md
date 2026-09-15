@@ -1,20 +1,28 @@
 ---
 name: codex-team
-description: Run the local Codex Team coordinator when the user asks multiple Codex accounts, Kimi Code, or other configured coding agents to collaborate on the current project.
+description: Use the locally configured Codex Team when the user asks several Codex accounts, Kimi, Qwen, DeepSeek, or GLM agents to work together on the current project. Also use for requests such as "让多个 Agent 一起做", "交给团队", or "多模型协作".
 ---
 
 # Codex Team
 
-Use the local coordinator to complete the user's project goal with the Agent pool previously selected in the Codex Team web console.
+Complete the user's requested outcome with the Agent team already saved in the local Codex Team settings.
 
-Run this command from the target project directory, passing the user's full requested outcome as one argument:
+Use the current workspace as the project. Pass the user's complete request to the launcher:
 
 ```bash
 python3 ~/.codex/skills/codex-team/scripts/launch.py "<project goal>"
 ```
 
-If the skill is installed as a copied folder instead of the supplied symbolic link, run `scripts/launch.py` from this skill folder. The launcher finds the coordinator, reads the last saved Agent selection, creates a local Git baseline when needed, and waits for planning, parallel execution, integration, review, and checks to finish.
+The launcher reads the saved team, prepares local version history when needed, and waits for planning, execution, integration, review, and checks. Do not ask the user to repeat a project path, account list, or model choice that is already available from the workspace and saved settings.
 
-Report the integration directory, branch, final status, and any failure shown by the launcher. Do not merge the integration branch into the user's current branch or push it unless the user separately asks.
+When it finishes, explain in plain Chinese:
 
-If no saved Agent selection exists, tell the user to open `start.command`, choose the main account and execution Agents, and click “保存协作配置”.
+- whether the task completed;
+- where the completed version is located;
+- which checks passed or what still needs attention.
+
+Do not expose raw commands or internal configuration unless the user asks. Do not push, publish, or deploy unless the user asks.
+
+If the launcher says no team is configured, tell the user: “请在 Codex Team 文件夹中双击 `setup.command`，在打开的页面选择主账号和执行 Agent，然后点‘保存协作配置’。设置一次后就能直接在项目对话中使用。”
+
+If the local coordinator cannot be found, explain that installing only the Skill is insufficient because the Agent programs run on this Mac. Tell the user to download the complete Codex Team folder and double-click `setup.command`.

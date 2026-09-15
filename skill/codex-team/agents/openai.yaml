@@ -1,0 +1,8 @@
+interface:
+  display_name: "Codex Team 多 Agent 协作"
+  short_description: "让多个本地 Coding Agent 分工完成当前项目"
+  default_prompt: "Use $codex-team to let my configured Agent team complete this project request."
+  brand_color: "#5B7CFA"
+
+policy:
+  allow_implicit_invocation: true
